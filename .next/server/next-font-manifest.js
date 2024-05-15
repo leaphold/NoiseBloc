@@ -1,0 +1,1 @@
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/home/leophold/Documents/Code/NoiseBloc2/src/app/layout\":[\"static/media/537d2de3ce4a5111-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"
