@@ -1,0 +1,44 @@
+.displayPitch {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  overflow: auto;
+  height: 100vh; 
+  width: 70vw; 
+  gap: 10px; 
+  margin: 2rem;
+}
+
+
+.pitchButton {
+  background-color: #fff9bc;
+  border: none;
+  color: black;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: column;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition-duration: 0.4s;
+  margin-top:1rem;
+  margin-bottom: 2rem;
+}
+
+.pitchItem{
+  background-color: #fff9bcb3;
+  border: none;
+  color: black;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: column;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition-duration: 0.4s;
+  margin-top:3rem;
+
+}
