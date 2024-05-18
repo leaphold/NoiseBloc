@@ -177,6 +177,12 @@ Innehåller ett färdigt kontaktformulär som behöver kopplas upp.
 ### Container
 Renderar {children} istället för att uppdatera hela sidan, håller reda på innehållet i "containern".
 
+### MarkSound
+Komponent som tar emot filer och pratar med backend server och tar emot hash från användaren som sedan används vid bearbetningen av ljudet sam kontrollerar att hashen är i korrekt format.
+
+### ShowModifiedPitches
+Visar adderade frekvenser och tidskod på sidan efter att ljudfil märkts. Suddas ut vid omrendering av sidan /mark.
+
 
 ## Sidor
 
@@ -192,7 +198,8 @@ Innehåller information om teamet bakom vilket i nuläget endast är jag själv.
 ### Contact/page
 Innehåller kontaktformulär från ContactForm som kommer att göra det möjligt för användare att direkt på sidan kontakta teamet bakom.
 
-
+### Mark/page
+Innehåller komponenterna för att märka ljud samt visa vilka frekvenser som lagts till.
 
 ## Översikt
         Ge en kort sammanfattning av koden och dess syfte.
@@ -229,11 +236,11 @@ Projektet blev mycket större än vad jag hade tänkt och vissa oförutsedda hä
 Jag blev därför att skriva en egen "compiler" och "deployer" vilket inte visade vara sås vårt som jag trott. Det som varit det absolut svåraste är att både Solidity som språk men också hela Web3 som används för att skapa en instans av det uppladdade kontraktet för att kunna interagera med det lokalt och på så sätt tillhandahålla en hash utan att ladda upp någon till nätverket. Ljudet kan då vattenmärkas innan hashen laddas upp på nätverket och kan då förknippas med ljudfilen. 
 Det jag fick mest problem med är att eftersom teknologin och språket är så nytt och det väldigt snabbt kommer uppdateringar och olika versioner så är det svårt att hitta dokumentation som är uppdaterad. Köpte en Udemykurs men tyvärr var det mest utdaterat och det är ibland så stora skillnader i syntax och hur man gör något att ett äldre sätt inte alls fungerar.
 
-Vattenmärkningsprocessen kan göras på många olika sätt och jag fokuserade vid detta tillfället påa tt skapa en bra prototyp som kan märka ljud utan att det påverkar ljudets kvalite och göra all data som går in in ljudet så tydligt som möjligt för användaren. Därför valde jag att skriva ut alla adderade toner direkt på hemsidan för att göra det tydligare. Detta kan vara kvar i den framtida appen också men måste tas bort vid nedstängning av sidan. Det är inte heller något som bör ligga uppe på en server någonstans då man med den informationen skulle kunna mixtra med ljudet för att ogiltigöga vattenmärknignen. Det som kommer finnas och som kan identifiera ljuden är hashen som kommer att ligga på blockchainen och vara tillgänglig för alla - den identifierar ägaren och används för att vattenmärka ljudet.
+Vattenmärkningsprocessen kan göras på många olika sätt och jag fokuserade vid detta tillfället påa tt skapa en bra prototyp som kan märka ljud utan att det påverkar ljudets kvalite och göra all data som går in in ljudet så tydligt som möjligt för användaren. Därför valde jag att skriva ut alla adderade toner direkt på hemsidan för att göra det tydligare. Detta kan vara kvar i den framtida appen också men måste tas bort vid nedstängning av sidan. Det är inte heller något som bör ligga uppe på en server någonstans då man med den informationen skulle kunna mixtra med ljudet för att ogiltigöga vattenmärkninen. Det som kommer finnas och som kan identifiera ljuden är hashen som kommer att ligga på blockchainen och vara tillgänglig för alla - den identifierar ägaren och används för att vattenmärka ljudet.
 
 Det som bör göras i framtiden är att påbörja skapandet av programvara som kan identifiera ljuden genom att avläsa med hjälp av hashen göra en liknande behandling av ljudet som kontrolleras och sedan jämföra ljuden. JAg tänker mig att det ska fungera på samma sätt som lösenord sparas och avkodas vid inloggning. Det kan betyda att jag också får modifiera denna koden och anpassa den efter avkodningen också. Säkerheten kring systemet och lagring av kod kommer också bli viktigare vid framtida projekt.
-
-
+En anna tank är också att använda mig av Polygon som ligger på Ethernätverket eftersom det har mindre avgifter eller "gas fees". 
+När man arbetar med blockchain är det viktigt att veta att till skillnad mot vanlig programmering så handlar det om transaktioner och många anrop hanteras som transaktioner. Att skicka ett GET anrop är gratis men att skicka ett POST kostar beroende på hur mycket och vad det är som ska bearbetas.
 
 //Alfred Jimenez
 
@@ -248,12 +255,10 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 
 ## Getting Started
-=======
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
 
->>>>>>> master
 First, run the development server:
 
 ```bash
@@ -262,20 +267,13 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-<<<<<<< HEAD
-=======
 # or
 bun dev
->>>>>>> master
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-<<<<<<< HEAD
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-=======
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
->>>>>>> master
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
