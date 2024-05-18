@@ -14,8 +14,7 @@ function Watermark() {
   const [pitches, setPitches] = useState<Pitch[]>([]);
 
   useEffect(() => {
-    setPitches([]); // Reset pitches when the component mounts
-
+    setPitches([]); 
     // Clear the pitches on the server
     const clearPitches = async () => {
       try {
@@ -30,7 +29,7 @@ function Watermark() {
 
   return (
     <div className={styles.markContainer}>
-      <h1>Make your make on the NoiseBloc</h1>
+      <h1>Make your mark on the NoiseBloc</h1>
       <p>Upload your sound file and mark it with a NoiseBloc</p>
 
       <MarkSound setPitches={setPitches} />
