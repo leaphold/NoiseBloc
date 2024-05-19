@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const solc = require('solc');
-const {Web3} = require('web3');
+const { Web3 } = require('web3');
 
 // Compile Contract
 const contractPath = path.resolve(__dirname, './', 'HashMaker.sol');
@@ -36,7 +36,7 @@ const contractData = output.contracts['HashMaker.sol'].HashMaker;
 fs.writeFileSync(path.resolve(__dirname, '../data', 'MyContract.json'), JSON.stringify(contractData));
 
 // Deploy Contract
-const web3 = new Web3('http://localhost:7545');
+const web3 = new Web3('http://localhost:8545');
 const contractABI = contractData.abi;
 const contractBytecode = contractData.evm.bytecode.object;
 
@@ -57,7 +57,8 @@ async function deployContract() {
     console.log('Contract deployed at address:', contractInstance.options.address);
 
     // Write the contract address to a file
-    fs.writeFileSync('contractAddress.js', `module.exports = '${contractInstance.options.address}';`);
+    const contractAddressPath = path.resolve(__dirname, '../contracts', 'contractAddress.js');
+    fs.writeFileSync(contractAddressPath, `module.exports = { contractAddress: '${contractInstance.options.address}' };`);
     console.log('Contract address written to file');
   } catch (err) {
     console.error('Deployment error:', err);

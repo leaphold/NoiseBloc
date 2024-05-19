@@ -2,10 +2,11 @@
 pragma solidity ^0.8.9;
 
 contract HashMaker {
-    bytes32 public lastHash;
+    event HashCreated(bytes32 indexed hash);
 
-    function hash(string memory _input) public returns (bytes32) {
-        lastHash = keccak256(abi.encodePacked(_input));
-        return lastHash;
+    function createHash(string memory data) public returns (bytes32) {
+        bytes32 hash = keccak256(abi.encodePacked(data));
+        emit HashCreated(hash);
+        return hash;
     }
 }
