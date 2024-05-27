@@ -29,29 +29,28 @@ web3.eth.getAccounts().then(accounts => {
   });
 
   // Call the createHash function on the contract
-  contract.methods.createHash(jsonString).send({
-    from: accounts[0],
-    gas: 5000000
-  })
-  .then(receipt => {
-    console.log('Transaction receipt: ', receipt);
+  contract.methods.createHash(jsonString).send({ from: accounts[0], gas: 5000000 })
+    .on('receipt', receipt => {
+      console.log('Transaction hash: ', receipt.transactionHash);
+      console.log('Generated hash: ', receipt.events.HashCreated.returnValues.hash);
+      console.log('-----------Receipt: ', receipt);
 
-    // Extract the hash from the transaction receipt
-    const hash = receipt.events.HashCreated.returnValues.hash;
-    console.log('Hash: ', hash);    
-    // Update hash.js with the hash
-    const content = 'module.exports = { transactionHash: \'' + hash + '\' };';
-    const hashPath = path.join(__dirname, '../../data/hash.js');
-    fs.writeFile(hashPath, content, (err) => {
-      if (err) {
-        console.error('Error writing file ', err);
-      } else {
-        console.log('File written successfully');
-        console.log('Hash: ', hash);
-      }
+      // Extract the hash from the transaction receipt
+      const hash = receipt.events.HashCreated.returnValues.hash;
+      console.log('Hash: ', hash);    
+      // Update hash.js with the hash
+      const content = 'module.exports = { transactionHash: \'' + hash + '\' };';
+      const hashPath = path.join(__dirname, '../../data/hash.js');
+      fs.writeFile(hashPath, content, (err) => {
+        if (err) {
+          console.error('Error writing file ', err);
+        } else {
+          console.log('File written successfully');
+          console.log('Hash: ', hash);
+        }
+      });
+    })
+    .catch(err => {
+      console.error('Error sending transaction: ', err);
     });
-  })
-  .catch(err => {
-    console.error('Error sending transaction: ', err);
-  });
-});
+}); 

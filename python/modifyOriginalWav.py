@@ -3,69 +3,113 @@ import sys
 import numpy as np
 from scipy.io import wavfile
 import json
+import hashlib
 
-file_path = sys.argv[1]
+def load_audio(file_path):
+    try:
+        sample_rate, data = wavfile.read(file_path)
+        return sample_rate, data.astype(float)
+    except Exception as e:
+        print(f"Error loading audio file: {e}")
+        sys.exit(1)
 
-# Load the original sound
-sample_rate, data = wavfile.read(file_path)
+def load_json(json_path):
+    try:
+        with open(json_path, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"Error loading JSON file: {e}")
+        sys.exit(1)
 
-# Ensure the audio data is float
-data = data.astype(float)
+def add_pitches(data, sample_rate, modified_pitches, key, volume_scale=150.0):
+    samples_per_pitch = int(sample_rate * 5.0)  # 5 seconds per pitch
+    added_pitches = np.zeros(samples_per_pitch * len(modified_pitches))
+    added_pitches_list = []
 
-# Load the modified JSON file
-json_path = os.path.join(os.path.dirname(__file__), '../data/pitchesMod.json')
-with open(json_path, 'r') as f:
-    modified_pitches = json.load(f)
+    # Convert the key to a hash
+    key_hash = hashlib.sha256(key.encode()).hexdigest()
+    # Use the hash as a seed to create a random number generator
+    rng = np.random.default_rng(int(key_hash, 16))
 
-# Calculate how many samples correspond to 3 seconds
-samples_per_3_seconds = int(sample_rate * 3)
+    for i, window in enumerate(modified_pitches):
+        # Use the random number generator to choose a pitch
+        pitch = rng.choice(window['pitches'])
+        print(f"Added pitch: {pitch}")
 
-# Calculate how many samples correspond to 25 milliseconds
-samples_per_pitch = int(sample_rate * 0.025)
+        # Generate a sinusoidal wave with the desired pitch
+        t = np.arange(samples_per_pitch)
+        sinusoid = np.sin(2 * np.pi * pitch * t / sample_rate)
 
-# Create a new array to hold the added pitches
-added_pitches = np.zeros(samples_per_3_seconds * len(modified_pitches))
+        # Ensure pitch values are scaled appropriately
+        added_pitches[i * samples_per_pitch: (i + 1) * samples_per_pitch] = sinusoid * volume_scale
 
-# Create a new list to hold the added pitches
-added_pitches_list = []
+        added_pitches_list.append({"id": i, "pitch": pitch})
 
-# For each window in the modified JSON file...
-for i, window in enumerate(modified_pitches):
-    # Select a random pitch from the window
-    pitch = np.random.choice(window['pitches'])
+    # Trim added_pitches to match the length of data
+    if len(added_pitches) > len(data):
+        added_pitches = added_pitches[:len(data)]
 
-    # Print the added pitch
-    print(f"Added pitch: {pitch}")
+    return added_pitches, added_pitches_list
 
-    # Add the pitch softly to the original sound every 3 seconds
-    added_pitches[i * samples_per_3_seconds : i * samples_per_3_seconds + samples_per_pitch] = pitch * 0.01
+def mix_audio(data, added_pitches):
+    if data.ndim == 1:
+        mixed_data = data[:len(added_pitches)] + added_pitches
+    else:
+        mixed_data = np.zeros_like(data)
+        for channel in range(data.shape[1]):
+            mixed_data[:len(added_pitches), channel] = data[:len(added_pitches), channel] + added_pitches
+    return np.clip(mixed_data, -32768, 32767)
 
-    # Add the pitch to the list
-    added_pitches_list.append({"id": i, "pitch": pitch})
+def save_json(data, file_path):
+    try:
+        with open(file_path, 'w') as f:
+            json.dump(data, f, indent=4)
+    except Exception as e:
+        print(f"Error saving JSON file: {e}")
 
-# Save the added pitch to a JSON file
-with open('added_pitches.json', 'w') as f:
-    json.dump(added_pitches_list, f)
+def save_audio(data, sample_rate, output_path):
+    try:
+        wavfile.write(output_path, sample_rate, np.int16(data))
+    except Exception as e:
+        print(f"Error saving audio file: {e}")
 
-# Mix the original sound with the added pitches
-if data.ndim == 1:
-    # Mono audio
-    mixed_data = data[:len(added_pitches)] + added_pitches
-else:
-    # Stereo audio
-    mixed_data = np.zeros_like(data)
-    for channel in range(data.shape[1]):
-        mixed_data[:len(added_pitches), channel] = data[:len(added_pitches), channel] + added_pitches
+def main():
+    if len(sys.argv) < 3:
+        print("Usage: python script.py <audio_file_path> <key>")
+        sys.exit(1)
 
-# Ensure the mixed data does not exceed the int16 range
-mixed_data = np.clip(mixed_data, -32768, 32767)
+    file_path = sys.argv[1]
+    key = sys.argv[2]
+    json_path = os.path.join(os.path.dirname(__file__), '../data/pitchesMod.json')
+    output_dir = os.path.expanduser('/home/leophold/Documents/Code/NoiseBloc3/NoiseBloc/public/')
+    output_file = os.path.join(output_dir, 'modifiedsound.wav')
 
-# Convert it to a 16-bit integer array
-final_data = np.int16(mixed_data)
+    print(f"Audio file path: {file_path}")
+    print(f"JSON file path: {json_path}")
+    print(f"Output directory: {output_dir}")
+    print(f"Output file: {output_file}")
 
-# Ensure the directory exists before writing the file
-output_dir = os.path.expanduser('~/Documents/Code/NoiseBloc2/public/modSounds/')
-os.makedirs(output_dir, exist_ok=True)
+    if not os.access(output_dir, os.W_OK):
+        print(f"No write permissions for directory: {output_dir}")
+        sys.exit(1)
 
-output_file = os.path.join(output_dir, 'modifiedSound.wav')
-wavfile.write(output_file, sample_rate, final_data)
+    sample_rate, data = load_audio(file_path)
+    modified_pitches = load_json(json_path)
+
+    added_pitches, added_pitches_list = add_pitches(data, sample_rate, modified_pitches, key, volume_scale=100.0)  # Increase volume_scale
+
+    save_json(added_pitches_list, 'added_pitches.json')
+
+    mixed_data = mix_audio(data, added_pitches)
+
+    if not os.path.exists(output_dir):
+        try:
+            os.makedirs(output_dir)
+        except Exception as e:
+            print(f"Error creating directory: {e}")
+            sys.exit(1)
+
+    save_audio(mixed_data, sample_rate, output_file)
+
+if __name__ == '__main__':
+    main()

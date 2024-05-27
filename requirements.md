@@ -12,6 +12,9 @@ In essence, this product aims to preserve the value of human-created audio conte
 - Start screen with a presentation of the product and a list of the currently most traded audio files and the latest minted files with the possibility to press them and have a small sample of that sound.
 - A page which gives you the choice of searching for a specific sound based on its name, composer, keyword, genre and then also be able to access a more advanced search in which sound length, region, quality, price can be filtered.
 - A profile page with information about creators which have minted.
+
+
+### Later implementation
 - Log in page for creators.
 ### Logged in:
     - Possibility to mint sound files and integrate them with the blockchain network.

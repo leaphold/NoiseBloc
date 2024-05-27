@@ -6,9 +6,11 @@ const { transactionHash } = require(path.resolve(__dirname, '../../data/hash.js'
 
 // Remove the '0x' prefix and split the hash into pairs of characters
 const hashPairs = transactionHash.slice(2).match(/.{1,2}/g);
-
+console.log('Hash pairs: ', hashPairs);
 // Convert the pairs into decimal numbers between 1 and 16
 const hashNumbers = hashPairs.map(pair => (parseInt(pair, 16) % 16) + 1);
+console.log('Hash numbers: ', hashNumbers);
+
 
 // Read the pitches from the JSON file
 const data = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../data/pitches.json'), 'utf8'));

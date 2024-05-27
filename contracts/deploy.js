@@ -26,7 +26,6 @@ const input = {
 let output;
 try {
   output = JSON.parse(solc.compile(JSON.stringify(input)));
-  console.log('Contract compiled successfully!');
 } catch (err) {
   console.error('Compilation error:', err);
   process.exit(1);

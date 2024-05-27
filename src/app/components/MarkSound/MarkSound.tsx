@@ -13,6 +13,7 @@ const UploadForm: React.FC<Props> = ({ setPitches }) => {
   const [walletHash, setWalletHash] = useState<string>('');
   const [isValidHash, setIsValidHash] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [key, setKey] = useState<string>(''); // New state variable for the key
 
   const onFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -33,6 +34,10 @@ const UploadForm: React.FC<Props> = ({ setPitches }) => {
     setIsValidHash(value.startsWith('0x') && value.length === 42);
   };
 
+  const onKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setKey(event.target.value);
+  };
+
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!isValidHash) {
@@ -47,6 +52,8 @@ const UploadForm: React.FC<Props> = ({ setPitches }) => {
       formData.append('file', file);
     }
     formData.append('walletHash', walletHash);
+    formData.append('key', key); // Append the key to the form data
+
     try {
       const response: AxiosResponse = await axios.post('http://localhost:3001/upload', formData, { responseType: 'blob' });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -73,8 +80,15 @@ const UploadForm: React.FC<Props> = ({ setPitches }) => {
       </label>
       <input type="file" className='fileInput' id='fileInput' onChange={onFileChange} />
       {fileName && <p>Uploaded file: {fileName}</p>}
-      <input type="text" value={walletHash} onChange={onWalletHashChange} placeholder="Enter wallet hash" />
+      <label htmlFor="hashInput" className={styles.hashInputLabel}>
+        Wallet Hash
+      </label>
+      <input type="text" className={styles.hashInput} value={walletHash} onChange={onWalletHashChange} placeholder="Enter wallet hash" />
       {!isValidHash && <p style={{ color: 'red' }}>Please enter a valid Ethereum hash.</p>}
+      <label htmlFor="keyInput" className={ styles.keyInputLabel }>
+        Key
+      </label>
+      <input type="text" className={styles.keyInput} value={key} onChange={onKeyChange} placeholder="Enter key" /> {}
       <button className={isLoading ? 'buttonProcessing' : 'button'} type="submit" disabled={isLoading}>
         {isLoading ? 'Processing...' : 'NoiseBloc it!'}
       </button>

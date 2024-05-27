@@ -1,1 +1,1 @@
-module.exports = { contractAddress: '0x896339300c31ADe698eD2c410548c74c4DA702E3' };
+module.exports = { contractAddress: '0xA3cD03Fd2a9C473859B48F8435fE524B92D87792' };
